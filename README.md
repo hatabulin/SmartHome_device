@@ -1,4 +1,4 @@
-# SmartHome_v2_stm32_device
+# SmartHome_v2_stm32_device_controller
 stm32 smarthome device
 
 using stm32 CubeMX 4.27 and Atollic TrueStudio 9.3
