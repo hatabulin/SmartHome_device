@@ -7,9 +7,11 @@ HAL Driver, Free RTOS, ....
 
 Implemented:
 - IRemote for communicate with ports.
-- Encoder for count humans in/out sensors, with second menu encoder.
-- Visuality info on 7-segment leds on TM1638, and keyboard scanning...
-- implement ssd1306 LCD for log info.
+- encoders: for counter traffic humans (fixed in/out) implement with two IR sensors,
+- encode for menu navigate.
+- visuality info on 7-segment led LCD on TM1638, and keyboard scanning...
+- visuality info on ssd1306 LCD.
 - implement USB protocol for communicate with host (implement autosearching device function).
+- in progress communicate via USART with esp8266 baseboard...
 
 PCB and  schematics on easy-eda:
