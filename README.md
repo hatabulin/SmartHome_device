@@ -6,7 +6,10 @@ Project tools:
 - HAL_CubeMX_4.27
 - Atollic TrueStudio 9.3.
 
-Implemented Free RTOS, USB STM32 Virtual com port middlewares.
+Implemented:
+- Free RTOS
+- USB STM32 Virtual com port 
+middlewares.
 
 Main functions:
 - IRemote for communicate with ports.
