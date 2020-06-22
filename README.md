@@ -16,8 +16,9 @@ Main functions:
 - encoders: for counter traffic humans (fixed in/out) implement with two IR sensors.
 - encode for menu navigate.
 - visual info on 7-segment led LCD on TM1638.
-- keyboard functions on the same chip (TM1638) for control outputs power keys.
+- keyboard functions on the same chip (TM1638) for control eight (8) output power keys.
 - visual info on ssd1306 LCD.
+- implement few smart routines (configurable auto on/off output , e.g. timeout sleep mode, ...)
 - implement USB protocol for communicate with host (implement autosearching device function).
 
 In progress:
