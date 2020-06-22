@@ -2,7 +2,10 @@
 
 Smarthome device controller based on stm32f103ret6 mcu series.
 
-Project tools: HAL_CubeMX_4.27, Atollic TrueStudio 9.3.
+Project tools:
+- HAL_CubeMX_4.27
+- Atollic TrueStudio 9.3.
+
 Implemented Free RTOS, USB STM32 Virtual com port middlewares.
 
 Main functions:
