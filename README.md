@@ -1,10 +1,11 @@
 # SmartHome_v2_stm32_device_controller
-stm32 smarthome device controller
 
-using stm32 CubeMX 4.27 and Atollic TrueStudio 9.3
-HAL driver, Free RTOS.
+Smarthome device controller based on stm32f103ret6 mcu series.
 
-Implemented:
+Project tools: HAL_CubeMX_4.27, Atollic TrueStudio 9.3.
+Implemented Free RTOS, USB STM32 Virtual com port middlewares.
+
+Main functions:
 - IRemote for communicate with ports.
 - encoders: for counter traffic humans (fixed in/out) implement with two IR sensors,
 - encode for menu navigate.
