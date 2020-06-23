@@ -58,6 +58,7 @@
 #include "ssd1306.h"
 #include "fonts.h"
 #include "eeprom.h"
+#include "hex_utils.h"
 //#include "Sim80x.h"
 //#include "Sim80xConfig.h"
 #include "string.h"
@@ -176,37 +177,6 @@ extern void	Sim80x_Init(osPriority Priority);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint32_t hex2int(char *hex) {
-    uint32_t val = 0;
-    while (*hex) {
-        // get current character then increment
-        uint8_t byte = *hex++;
-        // transform hex character to the 4bit equivalent number, using the ascii table indexes
-        if (byte >= '0' && byte <= '9') byte = byte - '0';
-        else if (byte >= 'a' && byte <='f') byte = byte - 'a' + 10;
-        else if (byte >= 'A' && byte <='F') byte = byte - 'A' + 10;
-        // shift 4 to make space for new digit, and add the 4 bits of the new digit
-        val = (val << 4) | (byte & 0xF);
-    }
-    return val;
-}
-
-uint8_t hex2int_byte(char *hex) {
-    uint32_t val = 0;
-    uint8_t i=0;
-    while (i<2){
-        // get current character then increment
-        uint8_t byte = *hex++;
-        i++;
-        // transform hex character to the 4bit equivalent number, using the ascii table indexes
-        if (byte >= '0' && byte <= '9') byte = byte - '0';
-        else if (byte >= 'a' && byte <='f') byte = byte - 'a' + 10;
-        else if (byte >= 'A' && byte <='F') byte = byte - 'A' + 10;
-        // shift 4 to make space for new digit, and add the 4 bits of the new digit
-        val = (val << 4) | (byte & 0xF);
-    }
-    return val;
-}
 
 void beep(uint16_t i) {
 	if (i>0) {
@@ -415,18 +385,12 @@ uint8_t TranslateFlagsToByte() {
 	return smarthome_beep_setting;
 }
 
-uint8_t TranslateSensorsGpioToByte() {
+uint8_t CheckUseDoorSensor() {
 
-	uint8_t data;
-	data = HAL_GPIO_ReadPin(IR_DOOR_SENSOR_GPIO_Port,IR_DOOR_SENSOR_Pin) & 0x01;
-	return data;
+	return HAL_GPIO_ReadPin(IR_DOOR_SENSOR_GPIO_Port,IR_DOOR_SENSOR_Pin) & 0x01;
 }
 
-//SendRegToHost(REG_CMD_GET_SENSORS,TranslateSensorsGpioToByte());
-
-//
 // Function 'SleepMode'
-//
 //
 void SleepMode(uint8_t mode) { // mode 1 - off with mask, mode 2 - off all
 	char string[25];
@@ -483,8 +447,7 @@ void SendRegToEsp8266(uint8_t reg, uint16_t value) {
 	snprintf(str,20,"WREG:%02X=%04X",reg,value);
 }
 
-void UsbFlagProcess(void)
-{
+void UsbFlagProcess(void) {
 	char str[100];
 	switch (flags.flag_usb)
 	{
@@ -563,7 +526,7 @@ void UsbFlagProcess(void)
 					encoder[0].value,encoder[1].value,
 					sleep_mode_timeout,
 					TranslateFlagsToByte(),
-					TranslateSensorsGpioToByte());
+					CheckUseDoorSensor());
 			CDC_Transmit_FS((uint8_t*)str, strlen(str));
 		break;
 	} // end switch flag_usb
