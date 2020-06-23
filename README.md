@@ -24,3 +24,6 @@ Main functions:
 In progress:
 - communicate via USART with esp8266 baseboard - another wireless part this full project.
 - PCB and  schematics in easy-eda
+
+pcb and schematics at https://easyeda.com/hatab/smarthome_v1
+pc shell software at https://github.com/hatabulin/Smarthome-v1
