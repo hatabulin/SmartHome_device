@@ -1224,8 +1224,7 @@ void ResetKU5590()
 // out: none
 // exec: Set led_on on the tm1638 shield
 //
-void OutStringToLoggerLcd(char str[20] )
-{
+void OutStringToLoggerLcd(char str[20] ) {
 	if (myBinarySemOledLcdHandle != pdFALSE) {
 		xSemaphoreTake(myBinarySemOledLcdHandle, portMAX_DELAY );
 		ssd1306_SetCursor(0,0,MAIN_LCD);
@@ -1233,14 +1232,12 @@ void OutStringToLoggerLcd(char str[20] )
 		UpdateGridBox(str,MAIN_LCD);
 		xSemaphoreGive(myBinarySemOledLcdHandle);
 	}
-
 }
 
 void ChangeCurrentGpioStatus(uint8_t command) {
 	char str[17];
 	snprintf(str, sizeof(str),"CMD#%u activated\n\r",command);
 	OutStringToLoggerLcd(str);
-// check bit of the command, toggle it and write to port pcf857x
 
 	if ((main_values.current_gpio_status >> (command-1)) & 0x01) {
 		WriteRelayPort(relay_channels_map[command-1],OFF);
@@ -1274,7 +1271,6 @@ void esp8266SyncTask(void const * argument ) {
 	UART_Send("SmartHome v2.0 by }{aTa6. Uart started\n");
 
 	for (;;) {
-
 		osDelay(1);
 	}
 }
@@ -1348,8 +1344,7 @@ void outputValueTosegmentsLed(uint8_t data, uint8_t pos_x)
 		if (data <10) {
 			tm1638_Digit(data ,pos_x);
 			segmentN_Set2(pos_x,0);
-		} else
-			tm1638_Digit(data ,pos_x-1);
+		} else tm1638_Digit(data ,pos_x-1);
 		xSemaphoreGive(myBinarySemTM1638Handle );
 	}
 }
@@ -1365,8 +1360,7 @@ void EncoderTask(void const * argument ) {
 	outputValueTosegmentsLed(encoder[0].value,4); // output to seven segment lcd on position 4 (count from 1...8)
 	outputValueTosegmentsLed(encoder[1].value,7);
 
-	void CheckEncoder(uint8_t num)
-	{
+	void CheckEncoder(uint8_t num) {
 		switch (num) {
 		case 0:
 			read_encoders(&encoder[0], 0);
@@ -1377,7 +1371,7 @@ void EncoderTask(void const * argument ) {
 				outputValueTosegmentsLed(encoder[0].value,4);
 				if (beep_settings_flags.encoder0) beep(1);
 
-				if (encoder[0].value < 1)  {
+				if (encoder[0].value < 1) {
 					flags.flag_timer4_counter = true;
 					timer4_counter = sleep_mode_timeout;
 					HAL_TIM_Base_Start(&htim4);
@@ -1399,7 +1393,6 @@ void EncoderTask(void const * argument ) {
 			if (encoder[1].dirty) {
 				encoder[1].dirty = false;
 			} break;
-
 		case 2:
 			read_encoders(&encoder[2], 1);
 			if (encoder[2].dirty) {
@@ -1411,15 +1404,11 @@ void EncoderTask(void const * argument ) {
 	}
 
 	for(;;) {
-		if (main_values.use_door_sensor == true) {
-			if (HAL_GPIO_ReadPin(IR_DOOR_SENSOR_GPIO_Port,IR_DOOR_SENSOR_Pin) == false) {
-				CheckEncoder(0);
-			}
-			else {
-				CheckEncoder(1);
-			}
+		if (main_values.use_door_sensor == true) { // check door is open ? if open use another encoder values
+			if (HAL_GPIO_ReadPin(IR_DOOR_SENSOR_GPIO_Port,IR_DOOR_SENSOR_Pin) == false)  CheckEncoder(0);
+			else CheckEncoder(1); // encodr counter if door closed
 		}
-		else CheckEncoder(0);
+		else CheckEncoder(0); // encoder counter humans indoor
 
 		CheckEncoder(2);
 
@@ -1506,7 +1495,7 @@ void ShowDateTime() {
 
 
 // Convert Date/Time structures to epoch time
-uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
+uint32_t RTC_ToAge(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
 	uint8_t  a;
 	uint16_t y;
 	uint8_t  m;
@@ -1537,7 +1526,7 @@ uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
 }
 
 // Convert epoch time to Date/Time structures
-void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
+void RTC_FromAge(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
 	uint32_t tm;
 	uint32_t t1;
 	uint32_t a;
@@ -1593,9 +1582,9 @@ void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date)
 void RTC_AdjustTimeZone(RTC_TimeTypeDef *time, RTC_DateTypeDef *date, int8_t offset) {
 	uint32_t epoch;
 
-	epoch  = RTC_ToEpoch(time,date);
+	epoch  = RTC_ToAge(time,date);
 	epoch += offset * 3600;
-	RTC_FromEpoch(epoch,time,date);
+	RTC_FromAge(epoch,time,date);
 }
 
 //void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart1)
@@ -1690,6 +1679,7 @@ void StartDefaultTask(void const * argument)
 		if (ir_remote_decode(&results)) {
 			snprintf(string, 64, "REMOTE:%p", (void*)results.value);
 			CDC_Transmit_FS((uint8_t*)string, strlen(string));
+
 			if (beep_settings_flags.remote) beep(0);
 
 			if (results.value==TR_HOT_BUTTON1) { // use HOT BUTTON function
@@ -1697,8 +1687,8 @@ void StartDefaultTask(void const * argument)
 				flags.flag_oled_timeout = false;
 				if (flags.flag_user_sleep_mode) {
 					ProcessHotButton(DEACTIVATE_HOT_BUTTON);
-					flags.flag_user_sleep_mode = false; }
-				else {
+					flags.flag_user_sleep_mode = false;
+				} else {
 					ProcessHotButton(ACTIVATE_HOT_BUTTON);
 					flags.flag_user_sleep_mode = true;
 				}
@@ -1708,8 +1698,7 @@ void StartDefaultTask(void const * argument)
 				if (!flags.flag_sleep_mode_remote) {
 					SleepMode(SLEEP_WITH_MASK); //SLEEP_WITH_MASK
 					flags.flag_sleep_mode_remote = true;
-				}
-				else {
+				} else {
 					RestoreFromSleep();
 					flags.flag_sleep_mode_remote = false;
 				}
